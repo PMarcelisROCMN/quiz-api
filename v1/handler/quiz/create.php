@@ -51,8 +51,6 @@ class CreateQuiz
 
             $quiz = new Quiz($quizID, $title, $description, $questions);
 
-            
-            
             foreach ($quiz->getQuestions() as $question) {
                 $quizQuestion = $question->getQuestion();
                 $quizAnswers = $question->getAnswers();
@@ -69,6 +67,18 @@ class CreateQuiz
                 $query->execute();
                 $questionID = $this->dbConnection->lastInsertId();
                 $question->setQuestionID($questionID);
+            }
+
+            $rowCount = $query->rowCount();
+
+            if ($rowCount === 0) {
+                $this->dbConnection->rollBack();
+                $response = new Response();
+                $response->setHttpStatusCode(500);
+                $response->setSuccess(false);
+                $response->addMessage("Failed to create quiz");
+                $response->send();
+                exit;
             }
 
             // create the quiz
