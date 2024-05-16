@@ -1,13 +1,15 @@
 <?php
 
+require_once('Question.php');
+
 class QuizException extends Exception{}
 
 class Quiz {
 
-    public $_id;
-    public $_title;
+    private $_id;
+    private $_title;
     private $_description;
-    private $_questions;
+    private $_questions = array();
 
     public function __construct($id, $title, $description, $questions) {
         $this->setID($id);
@@ -18,7 +20,7 @@ class Quiz {
         }
     }
 
-    private function setID($id) {
+    public function setID($id) {
         if (
             $id !== null && (!is_numeric($id)
                 || $id <= 0
@@ -45,7 +47,8 @@ class Quiz {
     }
 
     public function addQuestion($question) {
-        $this->_questions[] = new Question($question['id'], $question['quizID'], $question['question'], $question['optionA'], $question['optionB'], $question['optionC'], $question['optionD'], $question['correctAnswer']);
+        // var_dump($question);
+        $this->_questions[] = new Question(null, null, $question->question, $question->option_a, $question->option_b, $question->option_c, $question->option_d, $question->correct_option);
     }
 
     public function removeQuestion($question) {

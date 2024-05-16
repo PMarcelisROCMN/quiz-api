@@ -66,7 +66,7 @@ class Question
 
     public function setQuizID($quizID)
     {
-        if ($quizID !== null && (!is_numeric($quizID) || $quizID <= 0 || $quizID >  9223372036854775807) || $this->_id !== null) 
+        if ($quizID !== null && (!is_numeric($quizID) || $quizID <= 0 || $quizID >  9223372036854775807) || $this->_quizID !== null) 
         {
             throw new QuestionException('Question ID error');
         }

@@ -40,78 +40,39 @@ class CreateQuiz
             $description = $jsonData->description;
             $questions = $jsonData->questions;
 
-
-            $quiz = new Quiz($title, $description, $questions);
-
-            $json = json_encode($quiz);
-            $response = new Response();
-            $response->setHttpStatusCode(201);
-            $response->setSuccess(true);
-            $response->addMessage("Quiz created");
-            $response->setData($json);
-            $response->send();
-            exit();
-
-            
-
-            foreach ($questionsData as $questionData) {
-                $questionText = $questionData->question;
-                $answersData = $questionData->answers;
-
-                // Create a new Question object
-                $question = new Question($questionId, $questionText, $quizID);
-
-                // Iterate over answers data and add them to the question
-                foreach ($answersData as $answerData) {
-                    $answerText = $answerData->answer;
-                    $isCorrect = $answerData->is_correct;
-
-                    // Create a new Answer object
-                    $answer = new Answer($answerText, $isCorrect, $question->getQuestionID());
-
-                    // Add the answer to the question
-                    $question->addAnswer($answer);
-                }
-
-                // Add the question to the quiz
-                $quiz->addQuestion($question);
-            }
-
-            $quizArray = $quiz->returnQuizAsArray();
-
-            $response = new Response();
-            $response->setHttpStatusCode(201);
-            $response->setSuccess(true);
-            $response->addMessage("Quiz created");
-            $response->setData($quizArray);
-            $response->send();
-            exit();
-
-
             $this->dbConnection->beginTransaction();
 
-            // create the quiz
-            $query = $this->dbConnection->prepare('INSERT INTO quiz (title, description) VALUES (:title, :description)');
-            $query->bindParam(':title', $title, PDO::PARAM_STR);
+            $query = $this->dbConnection->prepare('INSERT INTO quiz (name, description) VALUES (:name, :description)');
+            $query->bindParam(':name', $title, PDO::PARAM_STR);
             $query->bindParam(':description', $description, PDO::PARAM_STR);
             $query->execute();
 
-            // get the ID of the new quiz
             $quizID = $this->dbConnection->lastInsertId();
 
-            // create the answers
+            $quiz = new Quiz($quizID, $title, $description, $questions);
 
+            
+            
+            foreach ($quiz->getQuestions() as $question) {
+                $quizQuestion = $question->getQuestion();
+                $quizAnswers = $question->getAnswers();
 
+                $question->setQuizID($quizID);
+                $query = $this->dbConnection->prepare('INSERT INTO question (quiz_id, question, option_a, option_b, option_c, option_d, correct_answer) VALUES (:quiz_id, :question, :option_a, :option_b, :option_c, :option_d, :correct_answer)');
+                $query->bindParam(':quiz_id', $quizID, PDO::PARAM_INT);
+                $query->bindParam(':question', $quizQuestion, PDO::PARAM_STR);
+                $query->bindParam(':option_a', $quizAnswers[0], PDO::PARAM_STR);
+                $query->bindParam(':option_b', $quizAnswers[1], PDO::PARAM_STR);
+                $query->bindParam(':option_c', $quizAnswers[2], PDO::PARAM_STR);
+                $query->bindParam(':option_d', $quizAnswers[3], PDO::PARAM_STR);
+                $query->bindParam(':correct_answer', $quizAnswers[4], PDO::PARAM_STR);
+                $query->execute();
+                $questionID = $this->dbConnection->lastInsertId();
+                $question->setQuestionID($questionID);
+            }
+
+            // create the quiz
             $this->dbConnection->commit();
-
-            // $returnData = array();
-            // $returnData['quiz_id'] = $quizID;
-            // foreach ($questions as $question) {
-            //     $returnData['questions'][] = $question['question'];
-            // }
-            // foreach ($answersData as $answer) {
-            //     $returnData['answers'][] = $answer['answer'];
-            // }
 
             $response = new Response();
             $response->setHttpStatusCode(201);
