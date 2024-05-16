@@ -19,26 +19,28 @@ class Quiz {
     }
 
     private function setID($id) {
+        if (
+            $id !== null && (!is_numeric($id)
+                || $id <= 0
+                || $id > 9223372036854775807)
+            || $this->_id !== null
+        ) {
+            throw new QuizException('Quiz ID error');
+        }
         $this->_id = $id;
     }
 
-    public function getID() {
-        return $this->_id;
-    }
-
-    public function getTitle() {
-        return $this->_title;
-    }
-
-    public function getDescription() {
-        return $this->_description;
-    }
-
     public function setTitle($title) {
+        if (strlen($title) <= 0 || strlen($title) > 255) {
+            throw new QuizException('quiz title error');
+        }
         $this->_title = $title;
     }
 
     public function setDescription($description) {
+        if (($description) <= 0 || strlen($description) > 65535) {
+            throw new QuizException('quiz description error');
+        }
         $this->_description = $description;
     }
 
@@ -53,6 +55,18 @@ class Quiz {
         }
         unset($this->_questions[$key]);
         $this->_questions = array_values($this->_questions);
+    }
+
+    public function getID() {
+        return $this->_id;
+    }
+
+    public function getTitle() {
+        return $this->_title;
+    }
+
+    public function getDescription() {
+        return $this->_description;
     }
 
     public function getQuestions() {
