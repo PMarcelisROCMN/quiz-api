@@ -1,0 +1,33 @@
+{
+    "title": "Sample Quiz",
+    "description": "A sample quiz with 3 questions",
+    "questions": [
+        {
+            "question_id": 1,
+            "question": "What is the capital of France?",
+            "option_a": "Paris",
+            "option_b": "London",
+            "option_c": "Berlin",
+            "option_d": "Madrid",
+            "correct_option": "A"
+        },
+        {
+            "question_id": 2,
+            "question": "What is the capital of Spain?",
+            "option_a": "Paris",
+            "option_b": "London",
+            "option_c": "Berlin",
+            "option_d": "Madrid",
+            "correct_option": "D"
+        },
+        {
+            "question_id": 3,
+            "question": "What is the capital of Germany?",
+            "option_a": "Paris",
+            "option_b": "London",
+            "option_c": "Berlin",
+            "option_d": "Madrid",
+            "correct_option": "C"
+        }
+    ]
+}
